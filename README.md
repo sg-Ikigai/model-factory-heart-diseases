@@ -35,7 +35,9 @@ As a beyond-syllabus technique, **Stochastic Weight Averaging** (Izmailov et al.
 ├── requirements.txt                 # Python dependencies (pip)
 ├── .vscode/settings.json            # VS Code / Jupyter kernel config
 ├── KaggleToken.py                   # ← NOT committed (git-ignored). See setup below.
-└── data/                            # ← NOT committed (git-ignored). See setup below.
+└── data/
+    └── heart.csv                    # ← Bundled dataset. Kaggle credentials are optional
+                                     #   (notebook falls back to this file automatically).
 ```
 
 ---
@@ -77,10 +79,12 @@ For CPU-only:
 pip install -r requirements.txt
 ```
 
-### 4 - Kaggle credentials (dataset auto-download)
+### 4 - Kaggle credentials (optional - dataset is bundled)
 
-The notebook downloads the dataset automatically via the Kaggle API.
-You need credentials **once**:
+`data/heart.csv` is included in the repository, so the notebook works out-of-the-box without any Kaggle account.
+The Kaggle API is only used when `heart.csv` is absent and credentials are available - useful if you delete the file and want to re-download it.
+
+If you do want to set up Kaggle credentials:
 
 **Option A - `KaggleToken.py` (recommended for local dev)**
 
@@ -112,9 +116,11 @@ Download `kaggle.json` from the API settings page and place it at `~/.kaggle/kag
    ```
    This skips all Kaggle credential logic entirely.
 
-> **Automatic fallback:** If `USE_LOCAL_CSV = False` but credentials are missing or an API token is
-> invalid/expired, the notebook automatically falls back to an existing `data/heart.csv` if one is
-> present on disk - with a warning printed to the cell output. No crash, no data loss.
+> **Automatic fallback:** `USE_LOCAL_CSV = False` (the default) tries the Kaggle API first.
+> If credentials are missing, invalid, or expired, the notebook automatically falls back to
+> `data/heart.csv` on disk - with a warning printed to the cell output. No crash, no data loss.
+> Since `heart.csv` is bundled with the repo, the experiment runs end-to-end with no external
+> dependencies required.
 
 ### 5 - Open the notebook
 
