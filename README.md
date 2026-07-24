@@ -103,7 +103,7 @@ $env:KAGGLE_API_TOKEN = "KGAT_xxxxxxxxxxxxxxxx"
 
 Download `kaggle.json` from the API settings page and place it at `~/.kaggle/kaggle.json`.
 
-**Option D — Manual download (no Kaggle account required)**
+**Option D - Manual download (no Kaggle account required)**
 
 1. Download `heart.csv` from [`ineubytes/heart-disease-dataset`](https://www.kaggle.com/datasets/ineubytes/heart-disease-dataset) and place it at `data/heart.csv`.
 2. In the **Configuration** cell of the notebook, set:
@@ -114,7 +114,7 @@ Download `kaggle.json` from the API settings page and place it at `~/.kaggle/kag
 
 > **Automatic fallback:** If `USE_LOCAL_CSV = False` but credentials are missing or an API token is
 > invalid/expired, the notebook automatically falls back to an existing `data/heart.csv` if one is
-> present on disk — with a warning printed to the cell output. No crash, no data loss.
+> present on disk - with a warning printed to the cell output. No crash, no data loss.
 
 ### 5 - Open the notebook
 
