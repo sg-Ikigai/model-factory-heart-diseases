@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────
+#  Heart Disease Experiment - Python 3.12
+#  Install core packages:
+#    pip install -r requirements.txt
+#
+#  PyTorch MUST be installed with CUDA support separately:
+#    pip install torch --index-url https://download.pytorch.org/whl/cu128
+#  (cu128 = CUDA 12.8; supports Blackwell RTX PRO 1000 and all prior arches)
+#  Driver ≥ 525.60 required for CUDA 12.x; driver 596.58 supports CUDA 13.2.
+# ─────────────────────────────────────────────────────────────
+
+# Core ML (torch installed separately with CUDA - see note above)
+torch>=2.3.0
+scikit-learn>=1.5.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Visualisation
+plotly>=5.22.0
+
+# Kaggle data download
+kaggle>=1.6.0
+
+# Notebook runtime
+ipykernel>=6.29.0
+ipywidgets>=8.1.0
