@@ -140,7 +140,7 @@ To verify the selected environment:
 python -c "import sys, torch; print(sys.executable); print(torch.__version__, torch.cuda.is_available())"
 ```
 
-Open `heart_disease_experiment.ipynb` and select the kernel **Python 3.12 (.venv)**.  
+Open `heart_disease_experiment.ipynb` and select the kernel **Python 3.12 (.venv)**.
 Run cells top-to-bottom with **Run All** or step through them manually.
 
 The complete model-selection stage performs 165 fits. GPU execution is recommended, although this
