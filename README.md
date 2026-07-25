@@ -11,19 +11,19 @@ This project is a graded lab assignment for the course *Statistisches Lernen 2* 
 ### Problem
 Binary classification: given 13 clinical features (age, cholesterol, resting blood pressure, etc.), predict whether a patient has heart disease (`target = 1`) or not (`target = 0`).
 
-### Approach: Two-phase ablation study
+### Approach: Two-phase, multi-seed CV ablation study
 Rather than running a brute-force grid search over all regulariser × optimiser combinations (which conflates effects), the experiment uses a **controlled two-phase design**:
 
 | Phase | Fixed | Varied | Goal |
 |-------|-------|--------|------|
-| **Phase 1** | Optimizer = Adam | All 6 regularisers | Isolate regularisation effect |
-| **Phase 2** | Regulariser = best from Phase 1 | All 5 optimisers | Isolate optimiser effect |
-| **Final** | Best config from Phase 2 | - | SWA retraining + full evaluation |
+| **Phase 1** | Optimizer = Adam | All 6 regularisers | Select regulariser by mean CV ROC-AUC |
+| **Phase 2** | Regulariser = Phase 1 winner | All 5 optimisers | Select optimiser by mean CV ROC-AUC |
+| **Final** | Best CV configuration | - | SWA retraining on development data + one test evaluation |
 
-This mirrors a controlled experiment (one variable at a time) and is both more interpretable and computationally frugal than an N×M Cartesian product.
+Each configuration uses 5 stratified folds and three seeds (15 fits). Standard deviations expose sampling and initialization sensitivity. A stratified 15% test set remains untouched until final evaluation.
 
 ### Why SWA?
-As a beyond-syllabus technique, **Stochastic Weight Averaging** (Izmailov et al., 2018) is applied as the final step. SWA averages model weights across the last 25 % of training epochs, landing in *flatter* loss-surface minima that generalise better - at zero additional gradient-step cost.
+As a beyond-syllabus technique, **Stochastic Weight Averaging** (Izmailov et al., 2018) is applied as the final step. SWA averages model weights across the last 25 % of training epochs and is evaluated against the base model rather than assumed to improve generalisation.
 
 ---
 
@@ -47,7 +47,7 @@ As a beyond-syllabus technique, **Stochastic Weight Averaging** (Izmailov et al.
 ### Prerequisites
 - Python 3.12
 - Git
-- A [Kaggle account](https://www.kaggle.com) for automatic dataset download
+- Optional: a [Kaggle account](https://www.kaggle.com) for re-downloading the bundled dataset
 
 ### 1 - Clone the repository
 
@@ -65,18 +65,23 @@ py -3.12 -m venv .venv
 
 ### 3 - Install dependencies
 
-> **Important:** The default `pip install torch` installs a CPU-only build.
-> Install the CUDA 12.8 build instead if you have an NVIDIA GPU:
+Install shared dependencies first. PyTorch is deliberately excluded from `requirements.txt` so this
+step cannot replace a CUDA build with the default PyPI build.
+
+```powershell
+pip install -r requirements.txt
+```
+
+For an NVIDIA GPU compatible with CUDA 12.8:
 
 ```powershell
 pip install torch --index-url https://download.pytorch.org/whl/cu128
-pip install -r requirements.txt
 ```
 
 For CPU-only:
 
 ```powershell
-pip install -r requirements.txt
+pip install torch
 ```
 
 ### 4 - Kaggle credentials (optional - dataset is bundled)
@@ -124,8 +129,22 @@ Download `kaggle.json` from the API settings page and place it at `~/.kaggle/kag
 
 ### 5 - Open the notebook
 
-In VS Code, open `heart_disease_experiment.ipynb` and select the kernel **Python 3.12 (.venv)**.  
+The workspace points Python and new terminals at `.venv`. After cloning or changing interpreter
+settings, run **Developer: Reload Window** once. Existing terminals are not retroactively activated;
+open a new terminal after the reload. In the notebook kernel picker, select
+**Python Environments → `.venv\Scripts\python.exe`** once. Kernel selection is then persisted.
+
+To verify the selected environment:
+
+```powershell
+python -c "import sys, torch; print(sys.executable); print(torch.__version__, torch.cuda.is_available())"
+```
+
+Open `heart_disease_experiment.ipynb` and select the kernel **Python 3.12 (.venv)**.  
 Run cells top-to-bottom with **Run All** or step through them manually.
+
+The complete model-selection stage performs 165 fits. GPU execution is recommended, although this
+small tabular workload also runs on CPU.
 
 ---
 
@@ -134,7 +153,10 @@ Run cells top-to-bottom with **Run All** or step through them manually.
 | Property | Value |
 |---|---|
 | Source | [ineubytes/heart-disease-dataset](https://www.kaggle.com/datasets/ineubytes/heart-disease-dataset) on Kaggle |
-| Rows | 1 025 |
+| Raw rows | 1 025 |
+| Exact duplicate rows removed | 723 (70.5%) |
+| Unique patients used | 302 |
+| Resampling | 85% development; 15% untouched test; 5-fold CV × 3 seeds on development |
 | Features | 13 clinical features (age, sex, cp, trestbps, chol, …) |
 | Target | Binary - `0` = No Disease, `1` = Has Disease |
 | Missing values | None |
@@ -170,6 +192,8 @@ All runs share a **CosineAnnealingLR** scheduler so no optimiser is handicapped 
 | Accuracy | Absolute classification rate |
 | Confusion matrix | Exposes false-negative rate - critical for medical classification |
 | Precision-Recall curve | More informative than ROC in medical contexts |
+| CV standard deviation | Quantifies instability across folds and random seeds |
+| Calibration curve | Assesses whether predicted probabilities match observed risk |
 
 ---
 

@@ -9,8 +9,7 @@
 #  Driver ≥ 525.60 required for CUDA 12.x; driver 596.58 supports CUDA 13.2.
 # ─────────────────────────────────────────────────────────────
 
-# Core ML (torch installed separately with CUDA - see note above)
-torch>=2.3.0
+# Core ML (install torch separately as documented above)
 scikit-learn>=1.5.0
 numpy>=1.26.0
 pandas>=2.2.0
