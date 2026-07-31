@@ -4,3 +4,4 @@ __pycache__/
 .ipynb_checkpoints/
 KaggleToken.py
 METHODOLOGY_AND_REFLECTION.md
+docs/
